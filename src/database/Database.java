@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 import entityClasses.User;
+import entityClasses.Post;
+import entityClasses.Reply;
 
 /*******
  * <p> Title: Database Class. </p>
@@ -124,6 +126,23 @@ public class Database {
 	    		+ "emailAddress VARCHAR(255), "
 	            + "role VARCHAR(10))";
 	    statement.execute(invitationCodesTable);
+
+		// Discussion: posts table (title max 100, body max 1000)
+		String postsTable = "CREATE TABLE IF NOT EXISTS posts ("
+				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "title VARCHAR(100), "
+				+ "body VARCHAR(1000), "
+				+ "author VARCHAR(255))";
+		statement.execute(postsTable);
+
+		// Discussion: replies table with FK to posts
+		String repliesTable = "CREATE TABLE IF NOT EXISTS replies ("
+				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
+				+ "parentPostId INT, "
+				+ "body VARCHAR(1000), "
+				+ "author VARCHAR(255), "
+				+ "FOREIGN KEY (parentPostId) REFERENCES posts(id) ON DELETE CASCADE)";
+		statement.execute(repliesTable);
 	}
 
 
@@ -1060,6 +1079,148 @@ public class Database {
 	public boolean getCurrentNewRole2() { return currentNewRole2;};
 
 	
+	// --- Discussion CRUD: Posts ---
+
+	/** Creates a new post and returns its generated id, or -1 on error. */
+	public int createPost(Post post) throws SQLException {
+		String sql = "INSERT INTO posts (title, body, author) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			pstmt.setString(1, post.getTitle());
+			pstmt.setString(2, post.getBody());
+			pstmt.setString(3, post.getAuthor());
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) return rs.getInt(1);
+		}
+		return -1;
+	}
+
+	/** Reads all posts from the database. */
+	public List<Post> getAllPosts() throws SQLException {
+		List<Post> list = new ArrayList<>();
+		String sql = "SELECT id, title, body, author FROM posts ORDER BY id";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql);
+			 ResultSet rs = pstmt.executeQuery()) {
+			while (rs.next()) {
+				list.add(new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author")));
+			}
+		}
+		return list;
+	}
+
+	/** Returns posts whose title or body contains the search term (case-insensitive). */
+	public List<Post> getPostsSubsetBySearch(String searchTerm) throws SQLException {
+		if (searchTerm == null || searchTerm.trim().isEmpty())
+			return getAllPosts();
+		List<Post> list = new ArrayList<>();
+		String sql = "SELECT id, title, body, author FROM posts WHERE LOWER(title) LIKE ? OR LOWER(body) LIKE ? ORDER BY id";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			String term = "%" + searchTerm.trim().toLowerCase() + "%";
+			pstmt.setString(1, term);
+			pstmt.setString(2, term);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				list.add(new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author")));
+			}
+		}
+		return list;
+	}
+
+	/** Returns the post with the given id, or null. */
+	public Post getPostById(int id) throws SQLException {
+		String sql = "SELECT id, title, body, author FROM posts WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next())
+				return new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author"));
+		}
+		return null;
+	}
+
+	/** Updates an existing post by id; returns true if a row was updated. */
+	public boolean updatePost(Post post) throws SQLException {
+		String sql = "UPDATE posts SET title = ?, body = ?, author = ? WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setString(1, post.getTitle());
+			pstmt.setString(2, post.getBody());
+			pstmt.setString(3, post.getAuthor());
+			pstmt.setInt(4, post.getId());
+			return pstmt.executeUpdate() > 0;
+		}
+	}
+
+	/** Deletes the post with the given id (replies are cascade-deleted). Returns true if deleted. */
+	public boolean deletePost(int id) throws SQLException {
+		String sql = "DELETE FROM posts WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+			return pstmt.executeUpdate() > 0;
+		}
+	}
+
+	// --- Discussion CRUD: Replies ---
+
+	/** Creates a new reply and returns its generated id, or -1 on error. */
+	public int createReply(Reply reply) throws SQLException {
+		String sql = "INSERT INTO replies (parentPostId, body, author) VALUES (?, ?, ?)";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			pstmt.setInt(1, reply.getParentPostId());
+			pstmt.setString(2, reply.getBody());
+			pstmt.setString(3, reply.getAuthor());
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) return rs.getInt(1);
+		}
+		return -1;
+	}
+
+	/** Returns all replies for the given parent post id. */
+	public List<Reply> getRepliesByPostId(int parentPostId) throws SQLException {
+		List<Reply> list = new ArrayList<>();
+		String sql = "SELECT id, parentPostId, body, author FROM replies WHERE parentPostId = ? ORDER BY id";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setInt(1, parentPostId);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				list.add(new Reply(rs.getInt("id"), rs.getInt("parentPostId"), rs.getString("body"), rs.getString("author")));
+			}
+		}
+		return list;
+	}
+
+	/** Returns the reply with the given id, or null. */
+	public Reply getReplyById(int id) throws SQLException {
+		String sql = "SELECT id, parentPostId, body, author FROM replies WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next())
+				return new Reply(rs.getInt("id"), rs.getInt("parentPostId"), rs.getString("body"), rs.getString("author"));
+		}
+		return null;
+	}
+
+	/** Updates an existing reply by id; returns true if a row was updated. */
+	public boolean updateReply(Reply reply) throws SQLException {
+		String sql = "UPDATE replies SET body = ?, author = ? WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setString(1, reply.getBody());
+			pstmt.setString(2, reply.getAuthor());
+			pstmt.setInt(3, reply.getId());
+			return pstmt.executeUpdate() > 0;
+		}
+	}
+
+	/** Deletes the reply with the given id. Returns true if deleted. */
+	public boolean deleteReply(int id) throws SQLException {
+		String sql = "DELETE FROM replies WHERE id = ?";
+		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			pstmt.setInt(1, id);
+			return pstmt.executeUpdate() > 0;
+		}
+	}
+
 	/*******
 	 * <p> Debugging method</p>
 	 * 

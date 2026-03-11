@@ -55,6 +55,7 @@ public class ViewRole1Home {
 	// GUI ARea 2: This is a stub, so there are no widgets here.  For an actual role page, this are
 	// would contain the widgets needed for the user to play the assigned role.
 	
+	protected static Button button_Discussion = new Button("Discussion");
 	
 	
 	// This is a separator and it is used to partition the GUI for various tasks
@@ -161,25 +162,27 @@ public class ViewRole1Home {
 		setupLabelUI(label_UserDetails, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 55);
 		
 		setupButtonUI(button_UpdateThisUser, "Dialog", 18, 170, Pos.CENTER, 610, 45);
-		button_UpdateThisUser.setOnAction((_) -> {ControllerRole1Home.performUpdate(); });
+		button_UpdateThisUser.setOnAction((e) -> {ControllerRole1Home.performUpdate(); });
 		
 		// GUI Area 2
 		
-			// This is a stub, so this area is empty
+		setupButtonUI(button_Discussion, "Dialog", 18, 250, Pos.CENTER, 20, 120);
+		button_Discussion.setOnAction((e) -> {ControllerRole1Home.performDiscussion(); });
 		
 		
 		// GUI Area 3
         setupButtonUI(button_Logout, "Dialog", 18, 250, Pos.CENTER, 20, 540);
-        button_Logout.setOnAction((_) -> {ControllerRole1Home.performLogout(); });
+        button_Logout.setOnAction((e) -> {ControllerRole1Home.performLogout(); });
         
         setupButtonUI(button_Quit, "Dialog", 18, 250, Pos.CENTER, 300, 540);
-        button_Quit.setOnAction((_) -> {ControllerRole1Home.performQuit(); });
+        button_Quit.setOnAction((e) -> {ControllerRole1Home.performQuit(); });
 
 		// This is the end of the GUI initialization code
 		
 		// Place all of the widget items into the Root Pane's list of children
          theRootPane.getChildren().addAll(
 			label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
+	        button_Discussion,
 	        line_Separator4, button_Logout, button_Quit);
 }
 	

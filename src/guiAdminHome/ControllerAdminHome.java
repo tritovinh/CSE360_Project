@@ -165,6 +165,17 @@ public class ControllerAdminHome {
 		guiAddRemoveRoles.ViewAddRemoveRoles.displayAddRemoveRoles(ViewAdminHome.theStage, 
 				ViewAdminHome.theUser);
 	}
+
+	/**********
+	 * <p> 
+	 * 
+	 * Title: performDiscussion () Method. </p>
+	 * 
+	 * <p> Description: Protected method that directs this user to the Discussion Page.</p>
+	 */
+	protected static void performDiscussion() {
+		guiDiscussion.ViewDiscussion.displayDiscussion(ViewAdminHome.theStage, ViewAdminHome.theUser);
+	}
 	
 	/**********
 	 * <p> 
