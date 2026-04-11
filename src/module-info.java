@@ -1,3 +1,6 @@
+/**
+ * Module contains the JavaFX application for TP1.
+ */
 module FoundationsF25 {
 	requires javafx.controls;
 	requires java.sql;

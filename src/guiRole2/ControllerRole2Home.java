@@ -51,6 +51,16 @@ public class ControllerRole2Home {
 	}	
 
 	/**********
+	 * <p> Method: performDiscussion() </p>
+	 * 
+	 * <p> Description: This method directs the user to the Discussion Page. </p>
+	 * 
+	 */
+	protected static void performDiscussion() {
+		guiDiscussion.ViewDiscussion.displayDiscussion(ViewRole2Home.theStage, ViewRole2Home.theUser);
+	}
+
+	/**********
 	 * <p> Method: performLogout() </p>
 	 * 
 	 * <p> Description: This method logs out the current user and proceeds to the normal login
