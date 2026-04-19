@@ -19,7 +19,7 @@ import entityClasses.User;
  * <b>OWASP A04:2025 Cryptographic Failures</b> (Aryan Desai — HW3/Top Defects.pdf) on {@link Database}.
  *
  * <p>These tests document observable behavior: passwords are compared literally at login time,
- * consistent with the team rationale about plaintext storage risk—not “fixed” for HW3.</p>
+ * consistent with the team rationale about plaintext storage risk—not "fixed" for HW3.</p>
  */
 @DisplayName("Database — password / auth (A04, HW3)")
 class DatabasePasswordCryptoHw3Test {

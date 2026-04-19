@@ -1,6 +1,5 @@
 package testgrading;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,7 +13,7 @@ import guiTools.PasswordEvaluator;
  * <b>OWASP A04:2025 Cryptographic Failures</b> (team assignment for Aryan Desai in HW3/Top Defects.pdf)
  * via password strength rules before storage (HW3 Task 2).
  *
- * <p>Assumption: “valid passwords” are those {@code evaluatePassword} accepts with an empty result
+ * <p>Assumption: "valid passwords" are those {@code evaluatePassword} accepts with an empty result
  * string, matching {@code InputValidatorTestRunner} expectations.</p>
  */
 @DisplayName("PasswordEvaluator — A04 / boundary (HW3)")

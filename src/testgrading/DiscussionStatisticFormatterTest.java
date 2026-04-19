@@ -1,6 +1,7 @@
 package testgrading;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import database.Database;
+import entityClasses.Post;
+import entityClasses.Reply;
 import guiAdminHome.DiscussionStatisticFormatter;
 
 /**
@@ -41,8 +44,8 @@ class DiscussionStatisticFormatterTest {
 	void summaryMatchesCounts() throws SQLException {
 		int p0 = db.countDiscussionPosts();
 		int r0 = db.countDiscussionReplies();
-		int postId = db.insertDiscussionPost(author, "root", null);
-		db.insertDiscussionPost(author, "reply", postId);
+		int postId = db.createPost(new Post(0, "t", "root", author, "student"));
+		db.createReply(new Reply(0, postId, "reply", author, "student"));
 		String line = DiscussionStatisticFormatter.buildAdminSummaryLine(db);
 		assertEquals("Discussion posts: " + (p0 + 1) + " | Replies: " + (r0 + 1), line);
 	}

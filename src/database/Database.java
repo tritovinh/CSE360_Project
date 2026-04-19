@@ -132,7 +132,8 @@ public class Database {
 				+ "id INT AUTO_INCREMENT PRIMARY KEY, "
 				+ "title VARCHAR(100), "
 				+ "body VARCHAR(1000), "
-				+ "author VARCHAR(255))";
+				+ "author VARCHAR(255), "
+				+ "role VARCHAR(20) NOT NULL DEFAULT '')";
 		statement.execute(postsTable);
 
 		// Discussion: replies table with FK to posts
@@ -141,6 +142,7 @@ public class Database {
 				+ "parentPostId INT, "
 				+ "body VARCHAR(1000), "
 				+ "author VARCHAR(255), "
+				+ "role VARCHAR(20) NOT NULL DEFAULT '', "
 				+ "FOREIGN KEY (parentPostId) REFERENCES posts(id) ON DELETE CASCADE)";
 		statement.execute(repliesTable);
 	}
@@ -1094,7 +1096,7 @@ public class Database {
 	 *  
 	 */
 	public int createPost(Post post) throws SQLException {
-		String sql = "INSERT INTO posts (title, body, author, role) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO posts (title, body, author, role) VALUES (?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setString(1, post.getTitle());
 			pstmt.setString(2, post.getBody());
@@ -1125,7 +1127,7 @@ public class Database {
 		
 		if (teacher) {
 			sql = """
-					SELECT p.id, p.title, p.body, p.author
+					SELECT p.id, p.title, p.body, p.author, p.role
 			FROM posts p
 			LEFT JOIN replies r 
 				ON p.id = r.parentPostId 
@@ -1142,7 +1144,7 @@ public class Database {
 				p.id
 			""";
 		} else {
-			sql = "SELECT id, title, body, author FROM posts ORDER BY id";
+			sql = "SELECT id, title, body, author, role FROM posts ORDER BY id";
 		}
 		try (PreparedStatement pstmt = connection.prepareStatement(sql);
 			 ResultSet rs = pstmt.executeQuery()) {
@@ -1169,7 +1171,7 @@ public class Database {
 		if (searchTerm == null || searchTerm.trim().isEmpty())
 			return getAllPosts(false);
 		List<Post> list = new ArrayList<>();
-		String sql = "SELECT id, title, body, author FROM posts WHERE LOWER(title) LIKE ? OR LOWER(body) LIKE ? ORDER BY id";
+		String sql = "SELECT id, title, body, author, role FROM posts WHERE LOWER(title) LIKE ? OR LOWER(body) LIKE ? ORDER BY id";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 			String term = "%" + searchTerm.trim().toLowerCase() + "%";
 			pstmt.setString(1, term);
@@ -1194,7 +1196,7 @@ public class Database {
 	 * @return the post object of the attached ID, or null if nothing is found
 	 */
 	public Post getPostById(int id) throws SQLException {
-		String sql = "SELECT id, title, body, author FROM posts WHERE id = ?";
+		String sql = "SELECT id, title, body, author, role FROM posts WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
@@ -1216,12 +1218,13 @@ public class Database {
 	 * @return true if the post was updated, false if not
 	 */
 	public boolean updatePost(Post post) throws SQLException {
-		String sql = "UPDATE posts SET title = ?, body = ?, author = ? WHERE id = ?";
+		String sql = "UPDATE posts SET title = ?, body = ?, author = ?, role = ? WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 			pstmt.setString(1, post.getTitle());
 			pstmt.setString(2, post.getBody());
 			pstmt.setString(3, post.getAuthor());
-			pstmt.setInt(4, post.getId());
+			pstmt.setString(4, post.getRole());
+			pstmt.setInt(5, post.getId());
 			return pstmt.executeUpdate() > 0;
 		}
 	}
@@ -1259,7 +1262,7 @@ public class Database {
 	 * @return the replies generated Id if created, -1 on error
 	 */
 	public int createReply(Reply reply) throws SQLException {
-		String sql = "INSERT INTO replies (parentPostId, body, author, role) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO replies (parentPostId, body, author, role) VALUES (?, ?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setInt(1, reply.getParentPostId());
 			pstmt.setString(2, reply.getBody());
@@ -1285,7 +1288,7 @@ public class Database {
 	 */
 	public List<Reply> getRepliesByPostId(int parentPostId) throws SQLException {
 		List<Reply> list = new ArrayList<>();
-		String sql = "SELECT id, parentPostId, body, author FROM replies WHERE parentPostId = ? ORDER BY id";
+		String sql = "SELECT id, parentPostId, body, author, role FROM replies WHERE parentPostId = ? ORDER BY id";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 			pstmt.setInt(1, parentPostId);
 			ResultSet rs = pstmt.executeQuery();
@@ -1308,7 +1311,7 @@ public class Database {
 	 * @return the reply object, null for nothing
 	 */
 	public Reply getReplyById(int id) throws SQLException {
-		String sql = "SELECT id, parentPostId, body, author FROM replies WHERE id = ?";
+		String sql = "SELECT id, parentPostId, body, author, role FROM replies WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
@@ -1356,6 +1359,42 @@ public class Database {
 			pstmt.setInt(1, id);
 			return pstmt.executeUpdate() > 0;
 		}
+	}
+
+	/*******
+	 * <p> Method: countDiscussionPosts </p>
+	 *
+	 * <p> Description: Returns the number of rows in {@code posts} for the admin summary line
+	 * ({@link guiAdminHome.DiscussionStatisticFormatter}).</p>
+	 */
+	public int countDiscussionPosts() {
+		String query = "SELECT COUNT(*) AS c FROM posts";
+		try (PreparedStatement pstmt = connection.prepareStatement(query); ResultSet rs = pstmt.executeQuery()) {
+			if (rs.next()) {
+				return rs.getInt("c");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	/*******
+	 * <p> Method: countDiscussionReplies </p>
+	 *
+	 * <p> Description: Returns the number of rows in {@code replies} for the admin summary line
+	 * ({@link guiAdminHome.DiscussionStatisticFormatter}).</p>
+	 */
+	public int countDiscussionReplies() {
+		String query = "SELECT COUNT(*) AS c FROM replies";
+		try (PreparedStatement pstmt = connection.prepareStatement(query); ResultSet rs = pstmt.executeQuery()) {
+			if (rs.next()) {
+				return rs.getInt("c");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	/*******
