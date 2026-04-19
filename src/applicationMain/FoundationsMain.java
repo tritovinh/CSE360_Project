@@ -61,6 +61,14 @@ import javafx.scene.control.Alert.AlertType;
 
 public class FoundationsMain extends Application {
 	
+	/*****
+     * <p> Method: FoundationsMain() </p>
+     * 
+     * <p> Description: This default constructor is not used in this system. </p>
+     */
+    public FoundationsMain() {	
+    }
+	
 	/*-*******************************************************************************************
 
 	Attributes
@@ -69,15 +77,19 @@ public class FoundationsMain extends Application {
 	
 	// These are the application values required by the user interface.  All the other classes
 	// access these constants to provide a uniform window size.	
+	/**final attribute for user window**/
 	public final static double WINDOW_WIDTH = 800;
+	/**final attribute for user window**/
 	public final static double WINDOW_HEIGHT = 600;
 
-	// These attributes establish the database and the fixed reference to it for the rest of the
+	/**These attributes establish the database and the fixed reference to it for the rest of the
 	// application so we do not need to keep passing the reference in parameters to the rest of the
 	// system for other methods that need it can access it.
+	 */
 	public static Database database = new Database();
     private Alert databaseInUse = new Alert(AlertType.INFORMATION);
 
+    /**Sets which role's home page is currently active**/
 	public static int activeHomePage = 0;		// Which role's home page is currently active?
 												// Role 0 is the admin role number
 	@Override
@@ -118,7 +130,7 @@ public class FoundationsMain extends Application {
 	 * command line parameters, if needed.  This application does not use them.  If they are
 	 * provided, the application will ignore them.</p>
 	 * 
-	 * @param String[] args   The array of command lines parameters.  These are not used.
+	 * @param args   The array of command lines parameters.  These are not used.
 	 */
 	public static void main(String[] args) {
 		launch(args);	// The launch method loads JavaFX and invokes its initialization.  When it

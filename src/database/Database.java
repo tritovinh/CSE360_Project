@@ -243,7 +243,7 @@ public class Database {
  *  <p> Method: List getUserList() </p>
  *  
  *  <P> Description: Generate an List of Strings, one for each user in the database,
- *  starting with "<Select User>" at the start of the list. </p>
+ *  starting with "Select User" at the start of the list. </p>
  *  
  *  @return a list of userNames found in the database.
  */
@@ -567,7 +567,7 @@ public class Database {
 	 * <p> Description: Update the username </p>
 	 * 
 	 * @param username is the username of the user
-	 * 	 *  
+	 * @param newname is the new username for the user 
 	 */
 	// update the user name
 	public void updateUserName(String username, String newname) {
@@ -1081,13 +1081,25 @@ public class Database {
 	
 	// --- Discussion CRUD: Posts ---
 
-	/** Creates a new post and returns its generated id, or -1 on error. */
+	/*******
+	 * <p> Method: int createPost(Post post) </p>
+	 * 
+	 * <p> Description: Creates a new post in database</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it. 
+	 * 
+	 * @param post is the post object to add to database
+	 * 
+	 * @return the generated id if it works or -1 for error
+	 *  
+	 */
 	public int createPost(Post post) throws SQLException {
-		String sql = "INSERT INTO posts (title, body, author) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO posts (title, body, author, role) VALUES (?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setString(1, post.getTitle());
 			pstmt.setString(2, post.getBody());
 			pstmt.setString(3, post.getAuthor());
+			pstmt.setString(4, post.getRole());
 			pstmt.executeUpdate();
 			ResultSet rs = pstmt.getGeneratedKeys();
 			if (rs.next()) return rs.getInt(1);
@@ -1095,23 +1107,67 @@ public class Database {
 		return -1;
 	}
 
-	/** Reads all posts from the database. */
-	public List<Post> getAllPosts() throws SQLException {
+	/*******
+	 * <p> Method: List getAllPosts() </p>
+	 * 
+	 * <p> Description: Reads and returns all posts in the database. If a teacher is present,
+	 *     then the list returns the list with student posts (with no teacher replies) first.</p>
+	 * 
+	 * @param teacher Is true if a teacher is present and adjusts the list output.
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @return a List of posts
+	 */
+	public List<Post> getAllPosts(boolean teacher) throws SQLException {
 		List<Post> list = new ArrayList<>();
-		String sql = "SELECT id, title, body, author FROM posts ORDER BY id";
+		String sql;
+		
+		if (teacher) {
+			sql = """
+					SELECT p.id, p.title, p.body, p.author
+			FROM posts p
+			LEFT JOIN replies r 
+				ON p.id = r.parentPostId 
+				AND r.role = 'teacher'
+			
+			GROUP BY p.id, p.title, p.body, p.author, p.role
+			
+			ORDER BY 
+				CASE 
+					WHEN p.role = 'student' AND COUNT(r.parentPostId) = 0 THEN 0
+					WHEN p.role = 'student' THEN 1
+					ELSE 2
+				END,
+				p.id
+			""";
+		} else {
+			sql = "SELECT id, title, body, author FROM posts ORDER BY id";
+		}
 		try (PreparedStatement pstmt = connection.prepareStatement(sql);
 			 ResultSet rs = pstmt.executeQuery()) {
 			while (rs.next()) {
-				list.add(new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author")));
+				list.add(new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author"), rs.getString("role")));
 			}
 		}
 		return list;
 	}
 
-	/** Returns posts whose title or body contains the search term (case-insensitive). */
+	/*******
+	 * <p> Method: List getPostsSubsetBySearch(String searchTerm) </p>
+	 * 
+	 * <p> Description: Reads and returns all posts in the database that contains
+	 *     the search team (case-insensitive)</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param searchTerm the team that is searched with
+	 * 
+	 * @return a List of posts that fit the parameter
+	 */
 	public List<Post> getPostsSubsetBySearch(String searchTerm) throws SQLException {
 		if (searchTerm == null || searchTerm.trim().isEmpty())
-			return getAllPosts();
+			return getAllPosts(false);
 		List<Post> list = new ArrayList<>();
 		String sql = "SELECT id, title, body, author FROM posts WHERE LOWER(title) LIKE ? OR LOWER(body) LIKE ? ORDER BY id";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -1120,25 +1176,45 @@ public class Database {
 			pstmt.setString(2, term);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				list.add(new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author")));
+				list.add(new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author"), rs.getString("role")));
 			}
 		}
 		return list;
 	}
 
-	/** Returns the post with the given id, or null. */
+	/*******
+	 * <p> Method: Post getPostById(int id) </p>
+	 * 
+	 * <p> Description: Finds and returns a post with a given ID</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param id the post id number that is searched for
+	 * 
+	 * @return the post object of the attached ID, or null if nothing is found
+	 */
 	public Post getPostById(int id) throws SQLException {
 		String sql = "SELECT id, title, body, author FROM posts WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next())
-				return new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author"));
+				return new Post(rs.getInt("id"), rs.getString("title"), rs.getString("body"), rs.getString("author"), rs.getString("role"));
 		}
 		return null;
 	}
 
-	/** Updates an existing post by id; returns true if a row was updated. */
+	/*******
+	 * <p> Method: boolean updatePost(Post post) </p>
+	 * 
+	 * <p> Description: Updates an existing post by id</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param post the post object that is updated
+	 * 
+	 * @return true if the post was updated, false if not
+	 */
 	public boolean updatePost(Post post) throws SQLException {
 		String sql = "UPDATE posts SET title = ?, body = ?, author = ? WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -1150,7 +1226,17 @@ public class Database {
 		}
 	}
 
-	/** Deletes the post with the given id (replies are cascade-deleted). Returns true if deleted. */
+	/*******
+	 * <p> Method: boolean deletePost(int id) </p>
+	 * 
+	 * <p> Description: Deletes the post with the given id</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param id the id of the specific post to be deleted
+	 * 
+	 * @return true if the post was deleted, false if not
+	 */
 	public boolean deletePost(int id) throws SQLException {
 		String sql = "DELETE FROM posts WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -1161,13 +1247,24 @@ public class Database {
 
 	// --- Discussion CRUD: Replies ---
 
-	/** Creates a new reply and returns its generated id, or -1 on error. */
+	/*******
+	 * <p> Method: int createReply(Reply reply) </p>
+	 * 
+	 * <p> Description: Creates a new reply object in the database</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param reply the reply object to be added
+	 * 
+	 * @return the replies generated Id if created, -1 on error
+	 */
 	public int createReply(Reply reply) throws SQLException {
-		String sql = "INSERT INTO replies (parentPostId, body, author) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO replies (parentPostId, body, author, role) VALUES (?, ?, ?)";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setInt(1, reply.getParentPostId());
 			pstmt.setString(2, reply.getBody());
 			pstmt.setString(3, reply.getAuthor());
+			pstmt.setString(4, reply.getRole());
 			pstmt.executeUpdate();
 			ResultSet rs = pstmt.getGeneratedKeys();
 			if (rs.next()) return rs.getInt(1);
@@ -1175,7 +1272,17 @@ public class Database {
 		return -1;
 	}
 
-	/** Returns all replies for the given parent post id. */
+	/*******
+	 * <p> Method: List getRepliesByPostId(int parentPostId) </p>
+	 * 
+	 * <p> Description: Returns all replies for the given parent post id</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param parentPostId the id of the parent post
+	 * 
+	 * @return a list of replies for a given post
+	 */
 	public List<Reply> getRepliesByPostId(int parentPostId) throws SQLException {
 		List<Reply> list = new ArrayList<>();
 		String sql = "SELECT id, parentPostId, body, author FROM replies WHERE parentPostId = ? ORDER BY id";
@@ -1183,25 +1290,45 @@ public class Database {
 			pstmt.setInt(1, parentPostId);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				list.add(new Reply(rs.getInt("id"), rs.getInt("parentPostId"), rs.getString("body"), rs.getString("author")));
+				list.add(new Reply(rs.getInt("id"), rs.getInt("parentPostId"), rs.getString("body"), rs.getString("author"), rs.getString("role")));
 			}
 		}
 		return list;
 	}
 
-	/** Returns the reply with the given id, or null. */
+	/*******
+	 * <p> Method: Reply getReplyById(int id) </p>
+	 * 
+	 * <p> Description: Returns the reply with the given id, or null</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param id the unique reply Id
+	 * 
+	 * @return the reply object, null for nothing
+	 */
 	public Reply getReplyById(int id) throws SQLException {
 		String sql = "SELECT id, parentPostId, body, author FROM replies WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
 			pstmt.setInt(1, id);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next())
-				return new Reply(rs.getInt("id"), rs.getInt("parentPostId"), rs.getString("body"), rs.getString("author"));
+				return new Reply(rs.getInt("id"), rs.getInt("parentPostId"), rs.getString("body"), rs.getString("author"), rs.getString("role"));
 		}
 		return null;
 	}
 
-	/** Updates an existing reply by id; returns true if a row was updated. */
+	/*******
+	 * <p> Method: boolean updateReply(Reply reply) </p>
+	 * 
+	 * <p> Description: Updates an existing reply by id</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param reply the reply that will be updated
+	 * 
+	 * @return true if the reply was updated
+	 */
 	public boolean updateReply(Reply reply) throws SQLException {
 		String sql = "UPDATE replies SET body = ?, author = ? WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -1212,7 +1339,17 @@ public class Database {
 		}
 	}
 
-	/** Deletes the reply with the given id. Returns true if deleted. */
+	/*******
+	 * <p> Method: boolean deleteReply(int id) </p>
+	 * 
+	 * <p> Description: Deletes the reply with the given id</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
+	 * 
+	 * @param id of the reply to be deleted
+	 * 
+	 * @return true if the reply was deleted
+	 */
 	public boolean deleteReply(int id) throws SQLException {
 		String sql = "DELETE FROM replies WHERE id = ?";
 		try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -1225,6 +1362,8 @@ public class Database {
 	 * <p> Debugging method</p>
 	 * 
 	 * <p> Description: Debugging method that dumps the database of the console.</p>
+	 * 
+	 * @throws SQLException when there is an issue creating the SQL command or executing it.
 	 * 
 	 * @throws SQLException if there is an issues accessing the database.
 	 * 

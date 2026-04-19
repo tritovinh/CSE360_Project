@@ -11,11 +11,24 @@ import javafx.stage.Stage;
 
 /*******
  * <p> Title: ControllerDiscussion Class </p>
+ * 
  * <p> Description: Handles user actions: create post, view all, edit post, delete post, add/edit/delete reply, logout, quit. </p>
  */
-	public class ControllerDiscussion {
+public class ControllerDiscussion {
+	
+	/*****
+     * <p> Method: ControllerDiscussion() </p>
+     * 
+     * <p> Description: This default constructor is not used in this system. </p>
+     */
+    public ControllerDiscussion() {	
+    }
 
-	/** Opens dialog to create a new post, saves it, and refreshes the post list */
+    /*****
+     * <p> Method: void performNewPost() </p>
+     * 
+     * <p> Description: Opens dialog to create a new post, saves it, and refreshes the post list. </p>
+     */
 	protected static void performNewPost() {
 		User user = ViewDiscussion.theUser;
 		if (user == null) return;
@@ -28,11 +41,16 @@ import javafx.stage.Stage;
 			showAlert(AlertType.ERROR, "Error", err);
 			return;
 		}
-		ViewDiscussion.refreshPostList(ModelDiscussion.loadAllPosts());
+		ViewDiscussion.refreshPostList(ModelDiscussion.loadAllPosts(user.getNewRole1()));
 	}
 
-	/** Opens dialog to edit the selected post, updates it, and refreshes the list */
+	/*****
+     * <p> Method: void performEditPost() </p>
+     * 
+     * <p> Description: Opens dialog to edit the selected post, updates it, and refreshes the list. </p>
+     */
 	protected static void performEditPost() {
+		User user = ViewDiscussion.theUser;
 		Post post = ViewDiscussion.getSelectedPost();
 		if (post == null) {
 			showAlert(AlertType.WARNING, "No selection", "Select a post to edit.");
@@ -49,12 +67,17 @@ import javafx.stage.Stage;
 			showAlert(AlertType.ERROR, "Error", err);
 			return;
 		}
-		ViewDiscussion.refreshPostList(ModelDiscussion.loadAllPosts());
+		ViewDiscussion.refreshPostList(ModelDiscussion.loadAllPosts(user.getNewRole1()));
 		ViewDiscussion.showPostDetail(post);
 	}
 
-	/** Confirms and deletes the selected post (and its replies), then refreshes the list */
+	/*****
+     * <p> Method: void performDeletePost() </p>
+     * 
+     * <p> Description: Confirms and deletes the selected post (and its replies), then refreshes the list. </p>
+     */
 	protected static void performDeletePost() {
+		User user = ViewDiscussion.theUser;
 		Post post = ViewDiscussion.getSelectedPost();
 		if (post == null) {
 			showAlert(AlertType.WARNING, "No selection", "Select a post to delete.");
@@ -71,10 +94,15 @@ import javafx.stage.Stage;
 			return;
 		}
 		ViewDiscussion.clearSelection();
-		ViewDiscussion.refreshPostList(ModelDiscussion.loadAllPosts());
+		ViewDiscussion.refreshPostList(ModelDiscussion.loadAllPosts(user.getNewRole1()));
 	}
 
-	/** Opens dialog to add a reply to the selected post and refreshes replies */
+
+	/*****
+     * <p> Method: void performAddReply() </p>
+     * 
+     * <p> Description: Opens dialog to add a reply to the selected post and refreshes replies. </p>
+     */
 	protected static void performAddReply() {
 		Post post = ViewDiscussion.getSelectedPost();
 		if (post == null) {
@@ -95,7 +123,14 @@ import javafx.stage.Stage;
 		ViewDiscussion.refreshRepliesForCurrentPost();
 	}
 
-	/** Opens dialog to edit the given reply and refreshes the reply list */
+	
+	/*****
+     * <p> Method: void performEditReply(Reply reply) </p>
+     * 
+     * <p> Description: Opens dialog to edit the given reply and refreshes the reply list. </p>\
+     * 
+     * @param reply The reply object that is edited
+     */
 	protected static void performEditReply(Reply reply) {
 		if (reply == null) return;
 		Stage dialog = ViewDiscussion.buildReplyDialog("Edit Reply", reply.getBody());
@@ -111,7 +146,14 @@ import javafx.stage.Stage;
 		ViewDiscussion.refreshRepliesForCurrentPost();
 	}
 
-	/** Deletes the given reply and refreshes the reply list */
+
+	/*****
+     * <p> Method: void performDeleteReply(Reply reply) </p>
+     * 
+     * <p> Description: Deletes the given reply and refreshes the reply list. </p>
+     * 
+     * @param reply the reply object that will be deleted
+     */
 	protected static void performDeleteReply(Reply reply) {
 		if (reply == null) return;
 		String err = ModelDiscussion.deleteReply(reply.getId());
@@ -122,17 +164,38 @@ import javafx.stage.Stage;
 		ViewDiscussion.refreshRepliesForCurrentPost();
 	}
 
-	/** Returns to the login screen */
+
+	/*****
+     * <p> Method: void performLogout() </p>
+     * 
+     * <p> Description: Returns to the login screen. </p>
+     */
 	protected static void performLogout() {
 		guiUserLogin.ViewUserLogin.displayUserLogin(ViewDiscussion.theStage);
 	}
 
-	/** Exits the application */
+	
+	/*****
+     * <p> Method: void performQuit() </p>
+     * 
+     * <p> Description: Exits the application. </p>
+     */
 	protected static void performQuit() {
 		System.exit(0);
 	}
 
-	/** Shows an alert dialog with the given type, title, and message */
+	
+	/*****
+     * <p> Method: void showAlert(AlertType type, String title, String message) </p>
+     * 
+     * <p> Description: Shows an alert dialog with the given type, title, and message. </p>
+     * 
+     * @param type specifies what kind of alert will be shown
+     * 
+     * @param title specifies the title of the alert
+     * 
+     * @param message specifies the message of the alert
+     */
 	private static void showAlert(AlertType type, String title, String message) {
 		Alert a = new Alert(type);
 		a.setTitle(title);

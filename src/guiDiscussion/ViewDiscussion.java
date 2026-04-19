@@ -64,19 +64,37 @@ public class ViewDiscussion {
 	private static VBox rightPostDetail;
 	private static StackPane rightStack;
 
-	/** Shows the discussion screen for the given user and stage. */
+	/** 
+	 * <p> Method: void displayDiscussion(Stage ps, User user)</p>
+	 * 
+	 * <p> Description: Shows the discussion screen for the given user and stage. </p>
+	 * 
+	 * @param ps specifies the stage for the GUI
+	 * 
+	 * @param user specifies the username of the user going to the site
+	 */
 	public static void displayDiscussion(Stage ps, User user) {
 		theStage = ps;
 		theUser = user;
 		if (theView == null) theView = new ViewDiscussion();
-		refreshPostList(ModelDiscussion.loadAllPosts());
+		refreshPostList(ModelDiscussion.loadAllPosts(user.getNewRole1()));
 		clearSelection();
 		theStage.setTitle("Discussion");
 		theStage.setScene(theScene);
 		theStage.show();
 	}
 
-	/** Builds the discussion UI layout (posts list, post detail, dialogs wiring). */
+	/**********
+	 * <p> Method: ViewDiscussion() </p>
+	 * 
+	 * <p> Description: This method initializes all the elements of the graphical user interface.
+	 * This method determines the location, size, font, color, and change and event handlers for
+	 * each GUI object.
+	 * 
+	 * This is a singleton and is only performed once.  Subsequent uses fill in the changeable
+	 * fields using the displayDiscussion method.</p>
+	 * 
+	 */
 	private ViewDiscussion() {
 		BorderPane root = new BorderPane();
 		root.setPadding(new Insets(12));
@@ -157,14 +175,32 @@ public class ViewDiscussion {
 		theScene = new Scene(root, WIDTH, HEIGHT);
 	}
 
-	/** Toggles the right pane between the "click a post" prompt and the post detail view. */
+	/*-*******************************************************************************************
+
+	Helper methods used to minimizes the number of lines of code needed above
+	
+	*/
+
+	/** 
+	 * <p> Method: void updateRightVisibility()</p>
+	 * 
+	 * <p> Description: Toggles the right pane between the "click a post" prompt and the post detail view. </p>
+	 * 
+	 */
 	private void updateRightVisibility() {
 		boolean hasSelection = selectedPost != null;
 		rightStack.getChildren().get(0).setVisible(!hasSelection);
 		rightStack.getChildren().get(1).setVisible(hasSelection);
 	}
-
-	/** Handles post selection: shows post detail and loads replies. */
+	
+	/** 
+	 * <p> Method: void onPostSelected(Post p)</p>
+	 * 
+	 * <p> Description: Handles post selection: shows post detail and loads replies. </p>
+	 * 
+	 * @param p specifies the post that is picked
+	 * 
+	 */
 	private void onPostSelected(Post p) {
 		selectedPost = p;
 		updateRightVisibility();
@@ -183,13 +219,27 @@ public class ViewDiscussion {
 		list_Replies.getItems().addAll(replies);
 	}
 
-	/** Refreshes the post list with the given posts. */
+	
+	/** 
+	 * <p> Method: void refreshPostList(List posts)</p>
+	 * 
+	 * <p> Description: Refreshes the post list with the given posts. </p>
+	 * 
+	 * @param post specifies an array of posts
+	 * 
+	 */
 	protected static void refreshPostList(List<Post> posts) {
 		list_Posts.getItems().clear();
 		if (posts != null) list_Posts.getItems().addAll(posts);
 	}
 
-	/** Clears the selected post and resets the right pane. */
+	
+	/** 
+	 * <p> Method: void clearSelection()</p>
+	 * 
+	 * <p> Description: Clears the selected post and resets the right pane. </p>
+	 * 
+	 */
 	protected static void clearSelection() {
 		selectedPost = null;
 		list_Posts.getSelectionModel().clearSelection();
@@ -200,7 +250,15 @@ public class ViewDiscussion {
 		list_Replies.getItems().clear();
 	}
 
-	/** Displays the given post in the right pane and loads its replies. */
+	
+	/** 
+	 * <p> Method: void showPostDetail(Post p)</p>
+	 * 
+	 * <p> Description: Displays the given post in the right pane and loads its replies. </p>
+	 * 
+	 * @param p specifies the post that will be displayed
+	 * 
+	 */
 	protected static void showPostDetail(Post p) {
 		if (p == null) return;
 		selectedPost = p;
@@ -213,7 +271,13 @@ public class ViewDiscussion {
 		list_Replies.getItems().addAll(replies);
 	}
 
-	/** Reloads replies for the currently selected post. */
+	
+	/** 
+	 * <p> Method: void refreshRepliesForCurrentPost()</p>
+	 * 
+	 * <p> Description: Reloads replies for the currently selected post. </p>
+	 * 
+	 */
 	protected static void refreshRepliesForCurrentPost() {
 		if (selectedPost == null) return;
 		List<Reply> replies = ModelDiscussion.loadRepliesForPost(selectedPost.getId());
@@ -221,10 +285,26 @@ public class ViewDiscussion {
 		list_Replies.getItems().addAll(replies);
 	}
 
-	/** Returns the currently selected post, or null if none. */
+	
+	/** 
+	 * <p> Method: Post getSelectedPost()</p>
+	 * 
+	 * <p> Description: Returns the currently selected post, or null if none. </p>
+	 * 
+	 * @return selectedPost specifies the post that was selected
+	 * 
+	 */
 	protected static Post getSelectedPost() { return selectedPost; }
+	
 
-	/** Builds a modal dialog for creating or editing a post (title and body); result via getLastPostDialogResult(). */
+	/** 
+	 * <p> Method: Stage buildPostDialog(String dialogTitle, String titleVal, String bodyVal)</p>
+	 * 
+	 * <p> Description: Builds a modal dialog for creating or editing a post (title and body). </p>
+	 * 
+	 * @return stage specifies the gui stage for creating/editing a post
+	 * 
+	 */
 	protected static Stage buildPostDialog(String dialogTitle, String titleVal, String bodyVal) {
 		Stage stage = new Stage();
 		stage.setTitle(dialogTitle);
@@ -268,10 +348,26 @@ public class ViewDiscussion {
 		return stage;
 	}
 
-	/** Returns the last result from the post dialog (title, body) or null if cancelled. */
+
+	/** 
+	 * <p> Method: String getLastPostDialogResult()</p>
+	 * 
+	 * <p> Description: Returns the last result from the post dialog (title, body) or null if cancelled. </p>
+	 * 
+	 * @return the last result from the post dialog (title, body) or null if cancelled.
+	 * 
+	 */
 	protected static String[] getLastPostDialogResult() { return lastPostDialogResult; }
 
-	/** Builds a modal dialog for adding or editing a reply (body only); result via getLastReplyDialogResult(). */
+	
+	/** 
+	 * <p> Method: Stage buildReplyDialog(String dialogTitle, String bodyVal)</p>
+	 * 
+	 * <p> Description: Builds a modal dialog for adding or editing a reply (body only). </p>
+	 * 
+	 * @return stage specifies the gui stage for creating/editing a reply.
+	 * 
+	 */
 	protected static Stage buildReplyDialog(String dialogTitle, String bodyVal) {
 		Stage stage = new Stage();
 		stage.setTitle(dialogTitle);
@@ -311,6 +407,14 @@ public class ViewDiscussion {
 		return stage;
 	}
 
-	/** Returns the last result from the reply dialog (body) or null if cancelled. */
+	
+	/** 
+	 * <p> Method: String String getLastReplyDialogResult()</p>
+	 * 
+	 * <p> Description: Returns the last result from the reply dialog (body) or null if cancelled. </p>
+	 * 
+	 * @return the last result from the reply dialog (body) or null if cancelled.
+	 * 
+	 */
 	protected static String getLastReplyDialogResult() { return lastReplyDialogResult; }
 }

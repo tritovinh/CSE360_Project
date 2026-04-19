@@ -19,7 +19,12 @@ public class PostListCell extends ListCell<Post> {
 	private final Text titleText = new Text();
 	private final Text authorText = new Text();
 
-	/** Sets up the cell to display post title and author. */
+	
+    /*****
+     * <p> Method: PostListCell() </p>
+     * 
+     * <p> Description: Construction method that sets up the cell to display post title and author. </p>
+     */
 	public PostListCell() {
 		titleText.setFont(Font.font("System", FontWeight.SEMI_BOLD, 14));
 		titleText.setWrappingWidth(220);
@@ -30,7 +35,16 @@ public class PostListCell extends ListCell<Post> {
 		box.setPadding(new Insets(8, 10, 8, 10));
 	}
 
-	/** Renders one post in the list (title and author) or clears the cell if empty. */
+	
+    /*****
+     * <p> Method: void updateItem(Post post, boolean empty) </p>
+     * 
+     * <p> Description: Renders one post in the list (title and author) or clears the cell if empty. </p>
+     * 
+     * @param post specifies the post item that will be rendered
+     * 
+     * @param empty specifies if the cell is empty or not
+     */
 	@Override
 	protected void updateItem(Post post, boolean empty) {
 		super.updateItem(post, empty);

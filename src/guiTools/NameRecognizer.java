@@ -1,10 +1,28 @@
 package guiTools;
 
+
+/*******
+ * <p> Title: NameRecognizer Class. </p>
+ * 
+ * <p> Description: A Java project to find if a Username is valid or not </p>
+ * 
+ */
 public class NameRecognizer {
 
-	public static String fullNameErrorMessage = "";		// The error message text
-	public static String fullNameInput = "";			// The input being processed
-	public static int fullNameIndexofError = -1;		// The index where the error was located
+	/*****
+     * <p> Method: NameRecognizer() </p>
+     * 
+     * <p> Description: This default constructor is not used in this system. </p>
+     */
+    public NameRecognizer() {	
+    }
+	
+	/**The error message text**/
+	public static String fullNameErrorMessage = "";	
+	/**The input being processed**/
+	public static String fullNameInput = "";	
+	/**The index where the error was located**/
+	public static int fullNameIndexofError = -1;
 	private static int state = 0;						// The current state value
 	private static int nextState = 0;					// The next state value
 	private static boolean finalState = false;			// Is this state a final state?
