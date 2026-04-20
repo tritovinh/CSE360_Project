@@ -76,7 +76,7 @@ public class ViewAdminHome {
 	protected static Label label_NumberOfInvitations = 
 			new Label("Number of Oustanding Invitations: x");
 	protected static Label label_NumberOfUsers = new Label("Number of Users: x");
-	/** TP3 Aspects.pdf item 4: Simple Statistic — total posts vs replies (see {@link DiscussionStatisticFormatter}). */
+	/** TP3 Aspects.pdf item 4: Simple Statistic — total posts vs replies. */
 	protected static Label label_DiscussionStats = new Label("Discussion posts: 0 | Replies: 0");
 	
 	// This is a separator and it is used to partition the GUI for various tasks
@@ -182,7 +182,7 @@ public class ViewAdminHome {
 		label_NumberOfInvitations.setText("Number of outstanding invitations: "
 				+ theDatabase.getNumberOfInvitations());
 		label_NumberOfUsers.setText("Number of users: " + theDatabase.getNumberOfUsers());
-		label_DiscussionStats.setText(DiscussionStatisticFormatter.buildAdminSummaryLine(theDatabase));
+		label_DiscussionStats.setText(buildDiscussionSummaryLine(theDatabase));
 				
 		// Set the title for the window, display the page, and wait for the Admin to do something
 		theStage.setTitle("CSE 360 Foundation Code: Admin Home Page");
@@ -230,7 +230,7 @@ public class ViewAdminHome {
 				theDatabase.getNumberOfUsers());
 
 		setupLabelUI(label_DiscussionStats, "Arial", 18, width - 40, Pos.BASELINE_LEFT, 20, 165);
-		label_DiscussionStats.setText(DiscussionStatisticFormatter.buildAdminSummaryLine(theDatabase));
+		label_DiscussionStats.setText(buildDiscussionSummaryLine(theDatabase));
 	
 		// GUI Area 3
 		setupLabelUI(label_Invitations, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 210);
@@ -394,5 +394,18 @@ public class ViewAdminHome {
 		c.setMinWidth(w);
 		c.setLayoutX(x);
 		c.setLayoutY(y);
+	}
+
+	/**
+	 * Builds the one-line discussion statistics text shown on the Admin page.
+	 *
+	 * @param db connected application database
+	 * @return one-line discussion post/reply summary
+	 */
+	private static String buildDiscussionSummaryLine(Database db) {
+		if (db == null) return "Discussion posts: 0 | Replies: 0";
+		int posts = db.countDiscussionPosts();
+		int replies = db.countDiscussionReplies();
+		return "Discussion posts: " + posts + " | Replies: " + replies;
 	}
 }

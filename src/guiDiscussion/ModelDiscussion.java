@@ -84,6 +84,7 @@ public class ModelDiscussion {
 	public static String createPost(String title, String body, String author) {
 		String err = DiscussionValidator.validatePost(title, body);
 		if (!err.isEmpty()) return err;
+		if (theUser == null) return "No active user session. Please log in again.";
 		String role = theUser.getNewRole1() ? "teacher" : "student";
 		
 		try {
@@ -156,6 +157,7 @@ public class ModelDiscussion {
 	public static String createReply(int parentPostId, String body, String author) {
 		String err = DiscussionValidator.validateReply(body);
 		if (!err.isEmpty()) return err;
+		if (theUser == null) return "No active user session. Please log in again.";
 		String role = theUser.getNewRole1() ? "teacher" : "student";
 		
 		try {
@@ -208,5 +210,16 @@ public class ModelDiscussion {
 			e.printStackTrace();
 			return "Database error: " + e.getMessage();
 		}
+	}
+
+	/**********
+	 * <p> Method: void setCurrentUser(User user) </p>
+	 * 
+	 * <p> Description: Sets the active user for role-aware post/reply creation. </p>
+	 * 
+	 * @param user specifies the currently logged-in user
+	 */
+	public static void setCurrentUser(User user) {
+		theUser = user;
 	}
 }

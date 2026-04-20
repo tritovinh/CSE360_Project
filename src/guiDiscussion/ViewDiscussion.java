@@ -76,6 +76,7 @@ public class ViewDiscussion {
 	public static void displayDiscussion(Stage ps, User user) {
 		theStage = ps;
 		theUser = user;
+		ModelDiscussion.setCurrentUser(user);
 		if (theView == null) theView = new ViewDiscussion();
 		refreshPostList(ModelDiscussion.loadAllPosts(user.getNewRole1()));
 		clearSelection();
