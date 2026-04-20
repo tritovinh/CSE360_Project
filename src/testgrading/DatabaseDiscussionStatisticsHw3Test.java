@@ -47,14 +47,14 @@ class DatabaseDiscussionStatisticsHw3Test {
 	void postAndReplyChangeCounts() throws SQLException {
 		int p0 = db.countDiscussionPosts();
 		int r0 = db.countDiscussionReplies();
-		int postId = db.createPost(new Post(0, "t", "thread root", author, "student"));
+		int postId = db.createPost(new Post(0, "t", "thread root", author));
 		assertTrue(postId > 0);
 		int p1 = db.countDiscussionPosts();
 		int r1 = db.countDiscussionReplies();
 		assertEquals(p0 + 1, p1);
 		assertEquals(r0, r1);
 
-		db.createReply(new Reply(0, postId, "reply text", author, "student"));
+		db.createReply(new Reply(0, postId, "reply text", author));
 		assertEquals(p0 + 1, db.countDiscussionPosts());
 		assertEquals(r0 + 1, db.countDiscussionReplies());
 	}
@@ -63,6 +63,6 @@ class DatabaseDiscussionStatisticsHw3Test {
 	@DisplayName("Reply with missing parent id fails (integrity / negative test)")
 	void replyWithInvalidParentFails() {
 		assertThrows(SQLException.class, () -> db.createReply(
-				new Reply(0, -99999, "orphan", author, "student")));
+				new Reply(0, -99999, "orphan", author)));
 	}
 }

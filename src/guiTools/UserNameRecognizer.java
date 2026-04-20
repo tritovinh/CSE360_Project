@@ -1,31 +1,23 @@
 package guiTools;
 
 
-/**
- * <p> Title: FSM-translated UserNameRecognizer. </p>
- * 
- * <p> Description: A demonstration of the mechanical translation of Finite State Machine 
- * diagram into an executable Java program using the UserName Recognizer. The code 
- * detailed design is based on a while loop with a select list</p>
- * 
- * <p> Copyright: Lynn Robert Carter © 2024 </p>
- * 
- * @author Lynn Robert Carter
- * 
- * @version 1.00		2024-09-13	Initial baseline derived from the Even Recognizer
- * @version 1.01		2024-09-17	Correction to address UNChar coding error, improper error
- * 									message, and improve internal documentation
- * 
- */
 public class UserNameRecognizer {
-	
-	/*****
-     * <p> Method: UserNameRecognizer() </p>
-     * 
-     * <p> Description: This default constructor is not used in this system. </p>
-     */
-	public UserNameRecognizer() {
-	}
+	/**
+	 * <p> Title: FSM-translated UserNameRecognizer. </p>
+	 * 
+	 * <p> Description: A demonstration of the mechanical translation of Finite State Machine 
+	 * diagram into an executable Java program using the UserName Recognizer. The code 
+	 * detailed design is based on a while loop with a select list</p>
+	 * 
+	 * <p> Copyright: Lynn Robert Carter © 2024 </p>
+	 * 
+	 * @author Lynn Robert Carter
+	 * 
+	 * @version 1.00		2024-09-13	Initial baseline derived from the Even Recognizer
+	 * @version 1.01		2024-09-17	Correction to address UNChar coding error, improper error
+	 * 									message, and improve internal documentation
+	 * 
+	 */
 
 	/**********************************************************************************************
 	 * 
@@ -34,12 +26,9 @@ public class UserNameRecognizer {
 	 * 
 	 */
 
-	/**The error message text **/
-	public static String userNameRecognizerErrorMessage = "";
-	/**The input being processed**/
-	public static String userNameRecognizerInput = "";
-	/**The index of error location**/
-	public static int userNameRecognizerIndexofError = -1;
+	public static String userNameRecognizerErrorMessage = "";	// The error message text
+	public static String userNameRecognizerInput = "";			// The input being processed
+	public static int userNameRecognizerIndexofError = -1;		// The index of error location
 	private static int state = 0;						// The current state value
 	private static int nextState = 0;					// The next state value
 	private static boolean finalState = false;			// Is this state a final state?

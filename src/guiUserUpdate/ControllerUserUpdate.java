@@ -3,29 +3,21 @@ package guiUserUpdate;
 import entityClasses.User;
 import javafx.stage.Stage;
 
-/*-********************************************************************************************
-
-The Controller for ViewUserUpdate 
-	
-**********************************************************************************************/
-
-/**********
- * <p> Title: ControllerUserUpdate Class</p>
- * 
- * <p> Description: This static class supports the actions initiated by the ViewUserUpdate
- * class. In this case, there is just one method, no constructors, and no attributes.</p>
- *
- */
 public class ControllerUserUpdate {
+	/*-********************************************************************************************
+
+	The Controller for ViewUserUpdate 
 	
-	/*****
-     * <p> Method: ControllerUserUpdate() </p>
-     * 
-     * <p> Description: This default constructor is not used in this system. </p>
-     */
-    public ControllerUserUpdate() {	
-    }
-	
+	**********************************************************************************************/
+
+	/**********
+	 * <p> Title: ControllerUserUpdate Class</p>
+	 * 
+	 * <p> Description: This static class supports the actions initiated by the ViewUserUpdate
+	 * class. In this case, there is just one method, no constructors, and no attributes.</p>
+	 *
+	 */
+
 	/*-********************************************************************************************
 
 	The User Interface Actions for this page

@@ -83,8 +83,7 @@ public class ViewNewAccount {
     											// and a role for this user
     protected static String emailAddress;		// Established here for use by the controller
     protected static String theRole;			// Established here for use by the controller
-    /**<p>Access to the User Update page's GUI Widgets </p>**/
-	public static Scene theNewAccountScene = null; 
+	public static Scene theNewAccountScene = null;	// Access to the User Update page's GUI Widgets
 	
 
 	/*-********************************************************************************************
@@ -107,7 +106,7 @@ public class ViewNewAccount {
 	 * 
 	 * After the instantiation, the code then populates the elements that change based on the user
 	 * and the system's current state.  It then sets the Scene onto the stage, and makes it visible
-	 * to the user. </p>
+	 * to the user.
 	 * 
 	 * @param ps specifies the JavaFX Stage to be used for this GUI and it's methods
 	 * 

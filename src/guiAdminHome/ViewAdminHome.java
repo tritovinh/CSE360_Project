@@ -76,11 +76,9 @@ public class ViewAdminHome {
 	protected static Label label_NumberOfInvitations = 
 			new Label("Number of Oustanding Invitations: x");
 	protected static Label label_NumberOfUsers = new Label("Number of Users: x");
-	/** TP3 Aspects.pdf item 4: Simple Statistic — total posts vs replies. */
-	protected static Label label_DiscussionStats = new Label("Discussion posts: 0 | Replies: 0");
 	
 	// This is a separator and it is used to partition the GUI for various tasks
-	private static Line line_Separator2 = new Line(20, 200, width-20, 200);
+	private static Line line_Separator2 = new Line(20, 165, width-20, 165);
 	
 	// GUI Area 3: This is the first of two areas provided the admin with a set of action buttons
 	// that can be used to perform the tasks allocated to the admin role.  This part is about
@@ -95,7 +93,7 @@ public class ViewAdminHome {
 	protected static Alert alertEmailSent = new Alert(AlertType.INFORMATION);
 	
 	// This is a separator and it is used to partition the GUI for various tasks
-	private static Line line_Separator3 = new Line(20, 290, width-20, 290);
+	private static Line line_Separator3 = new Line(20, 255, width-20, 255);
 	
 	// GUI Area 4: This is the second of the two action item areas.  This provides a set of other
 	// admin buttons to use to perform other roles.  Many of these buttons are just stubs and an
@@ -109,7 +107,7 @@ public class ViewAdminHome {
 	protected static Alert alertNotImplemented = new Alert(AlertType.INFORMATION);
 
 	// This is a separator and it is used to partition the GUI for various tasks
-	private static Line line_Separator4 = new Line(20, 560, width-20, 560);
+	private static Line line_Separator4 = new Line(20, 525, width-20,525);
 
 	// GUI Area 5: This is last of the GUI areas.  It is used for quitting the application, logging
 	// out, and on other pages a return is provided so the user can return to a previous page when
@@ -177,12 +175,6 @@ public class ViewAdminHome {
 
 		// Set the role for potential users to the default (No role selected)
 		combobox_SelectRole.getSelectionModel().select(0);
-
-		// Refresh status labels each visit (invitations, user counts, discussion statistics)
-		label_NumberOfInvitations.setText("Number of outstanding invitations: "
-				+ theDatabase.getNumberOfInvitations());
-		label_NumberOfUsers.setText("Number of users: " + theDatabase.getNumberOfUsers());
-		label_DiscussionStats.setText(buildDiscussionSummaryLine(theDatabase));
 				
 		// Set the title for the window, display the page, and wait for the Admin to do something
 		theStage.setTitle("CSE 360 Foundation Code: Admin Home Page");
@@ -228,20 +220,17 @@ public class ViewAdminHome {
 		setupLabelUI(label_NumberOfUsers, "Arial", 20, 200, Pos.BASELINE_LEFT, 20, 135);
 		label_NumberOfUsers.setText("Number of users: " + 
 				theDatabase.getNumberOfUsers());
-
-		setupLabelUI(label_DiscussionStats, "Arial", 18, width - 40, Pos.BASELINE_LEFT, 20, 165);
-		label_DiscussionStats.setText(buildDiscussionSummaryLine(theDatabase));
 	
 		// GUI Area 3
-		setupLabelUI(label_Invitations, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 210);
+		setupLabelUI(label_Invitations, "Arial", 20, width, Pos.BASELINE_LEFT, 20, 175);
 	
 		setupLabelUI(label_InvitationEmailAddress, "Arial", 16, width, Pos.BASELINE_LEFT,
-		20, 245);
+		20, 210);
 	
 		setupTextUI(text_InvitationEmailAddress, "Arial", 16, 360, Pos.BASELINE_LEFT,
-		130, 240, true);
+		130, 205, true);
 	
-		setupComboBoxUI(combobox_SelectRole, "Dialog", 16, 90, 500, 240);
+		setupComboBoxUI(combobox_SelectRole, "Dialog", 16, 90, 500, 205);
 	
 		List<String> list = new ArrayList<String>();	// Create a new list empty list of the
 		for (int i = 0; i < roles.length; i++) {		// roles this code currently supports
@@ -252,37 +241,37 @@ public class ViewAdminHome {
 		alertEmailSent.setTitle("Invitation");
 		alertEmailSent.setHeaderText("Invitation was sent");
 
-		setupButtonUI(button_SendInvitation, "Dialog", 16, 150, Pos.CENTER, 630, 240);
+		setupButtonUI(button_SendInvitation, "Dialog", 16, 150, Pos.CENTER, 630, 205);
 		button_SendInvitation.setOnAction((e) -> {
 			ControllerAdminHome.performInvitation(); 
 			});
 	
 		// GUI Area 4
-		setupButtonUI(button_ManageInvitations, "Dialog", 16, 250, Pos.CENTER, 20, 305);
+		setupButtonUI(button_ManageInvitations, "Dialog", 16, 250, Pos.CENTER, 20, 270);
 		button_ManageInvitations.setOnAction((e) -> 
 			{ControllerAdminHome.manageInvitations(); });
 	
-		setupButtonUI(button_SetOnetimePassword, "Dialog", 16, 250, Pos.CENTER, 20, 355);
+		setupButtonUI(button_SetOnetimePassword, "Dialog", 16, 250, Pos.CENTER, 20, 320);
 		button_SetOnetimePassword.setOnAction((e) -> 
 			{ControllerAdminHome.setOnetimePassword(); });
 
-		setupButtonUI(button_DeleteUser, "Dialog", 16, 250, Pos.CENTER, 20, 405);
+		setupButtonUI(button_DeleteUser, "Dialog", 16, 250, Pos.CENTER, 20, 370);
 		button_DeleteUser.setOnAction((e) -> {ControllerAdminHome.deleteUser(); });
 
-		setupButtonUI(button_ListUsers, "Dialog", 16, 250, Pos.CENTER, 20, 455);
+		setupButtonUI(button_ListUsers, "Dialog", 16, 250, Pos.CENTER, 20, 420);
 		button_ListUsers.setOnAction((e) -> {ControllerAdminHome.listUsers(); });
 
-		setupButtonUI(button_AddRemoveRoles, "Dialog", 16, 250, Pos.CENTER, 20, 505);
+		setupButtonUI(button_AddRemoveRoles, "Dialog", 16, 250, Pos.CENTER, 20, 470);
 		button_AddRemoveRoles.setOnAction((e) -> {ControllerAdminHome.addRemoveRoles(); });
 
-		setupButtonUI(button_Discussion, "Dialog", 16, 250, Pos.CENTER, 300, 305);
+		setupButtonUI(button_Discussion, "Dialog", 16, 250, Pos.CENTER, 300, 270);
 		button_Discussion.setOnAction((e) -> {ControllerAdminHome.performDiscussion(); });
 		
 		// GUI Area 5
-		setupButtonUI(button_Logout, "Dialog", 18, 250, Pos.CENTER, 20, 575);
+		setupButtonUI(button_Logout, "Dialog", 18, 250, Pos.CENTER, 20, 540);
 		button_Logout.setOnAction((e) -> {ControllerAdminHome.performLogout(); });
     
-		setupButtonUI(button_Quit, "Dialog", 18, 250, Pos.CENTER, 300, 575);
+		setupButtonUI(button_Quit, "Dialog", 18, 250, Pos.CENTER, 300, 540);
 		button_Quit.setOnAction((e) -> {ControllerAdminHome.performQuit(); });
 
 		// This is the end of the GUI initialization code
@@ -290,7 +279,7 @@ public class ViewAdminHome {
 		// Place all of the widget items into the Root Pane's list of children
 		theRootPane.getChildren().addAll(
 			label_PageTitle, label_UserDetails, button_UpdateThisUser, line_Separator1,
-    		label_NumberOfInvitations, label_NumberOfUsers, label_DiscussionStats,
+    		label_NumberOfInvitations, label_NumberOfUsers,
     		line_Separator2,
     		label_Invitations, 
     		label_InvitationEmailAddress, text_InvitationEmailAddress,
@@ -394,18 +383,5 @@ public class ViewAdminHome {
 		c.setMinWidth(w);
 		c.setLayoutX(x);
 		c.setLayoutY(y);
-	}
-
-	/**
-	 * Builds the one-line discussion statistics text shown on the Admin page.
-	 *
-	 * @param db connected application database
-	 * @return one-line discussion post/reply summary
-	 */
-	private static String buildDiscussionSummaryLine(Database db) {
-		if (db == null) return "Discussion posts: 0 | Replies: 0";
-		int posts = db.countDiscussionPosts();
-		int replies = db.countDiscussionReplies();
-		return "Discussion posts: " + posts + " | Replies: " + replies;
 	}
 }

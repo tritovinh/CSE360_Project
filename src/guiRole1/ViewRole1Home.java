@@ -165,6 +165,7 @@ public class ViewRole1Home {
 		button_UpdateThisUser.setOnAction((e) -> {ControllerRole1Home.performUpdate(); });
 		
 		// GUI Area 2
+		
 		setupButtonUI(button_Discussion, "Dialog", 18, 250, Pos.CENTER, 20, 120);
 		button_Discussion.setOnAction((e) -> {ControllerRole1Home.performDiscussion(); });
 		

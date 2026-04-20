@@ -1,6 +1,8 @@
 package guiTools;
 
-/**
+
+public class EmailAddressRecognizer {
+	/**
 	 * <p> Title: FSM-translated EmailAddressRecognizer. </p>
 	 * 
 	 * <p> Description: A demonstration of the mechanical translation of Finite State Machine 
@@ -20,16 +22,7 @@ package guiTools;
 	 * 										with an empty email address
 	 * 
 	 */
-public class EmailAddressRecognizer {
-	
-	/*****
-     * <p> Method: EmailAddressRecognizer() </p>
-     * 
-     * <p> Description: This default constructor is not used in this system. </p>
-     */
-    public EmailAddressRecognizer() {	
-    }
-	
+
 	/**********************************************************************************************
 	 * 
 	 * Result attributes to be used for GUI applications where a detailed error message and a 
@@ -37,12 +30,9 @@ public class EmailAddressRecognizer {
 	 * 
 	 */
 
-    /**The error message text**/
-	public static String emailAddressErrorMessage = "";
-	/**The input being processed**/
-	public static String emailAddressInput = "";	
-	/**The index where the error was located**/
-	public static int emailAddressIndexofError = -1;
+	public static String emailAddressErrorMessage = "";	// The error message text
+	public static String emailAddressInput = "";		// The input being processed
+	public static int emailAddressIndexofError = -1;	// The index where the error was located
 	private static int state = 0;						// The current state value
 	private static int nextState = 0;					// The next state value
 	private static boolean finalState = false;			// Is this state a final state?

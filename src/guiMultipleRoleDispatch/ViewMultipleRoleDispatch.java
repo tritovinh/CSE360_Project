@@ -89,16 +89,7 @@ public class ViewMultipleRoleDispatch {
 	Constructor
 
 	 */
-	/**********
-	 * <p> Method: void displayMultipleRoleDispatch(stage ps, User user) </p>
-	 * 
-	 * <p> Description: This constructor used to show list of roles </p>
-	 * 
-	 * @param ps specifies the main reference to the GUI
-	 * 
-	 * @param user specifies the user who is looking at this page
-	 * 
-	 */
+
 	public static void displayMultipleRoleDispatch(Stage ps, User user) {
 		
 		// Establish the references to the GUI and the current user

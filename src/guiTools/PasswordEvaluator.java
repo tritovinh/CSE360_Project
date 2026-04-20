@@ -15,33 +15,18 @@ package guiTools;
  * changes made by Rio McCue for use in Team Project 1
  * 
  */
+
+
 public class PasswordEvaluator{
 	
-    /*****
-     * <p> Method: PasswordEvaluator() </p>
-     * 
-     * <p> Description: This default constructor is not used in this system. </p>
-     */
-    public PasswordEvaluator() {	
-    }
-	
-    /**The error message text**/
-	public static String passwordErrorMessage;	
-	/**The input being processed**/
-	public static String passwordInput = "";
-	/**The index where the error was located**/
-	public static int passwordIndexofError = -1;
-	/**Check if there exists an uppercase**/
+	public static String passwordErrorMessage;	 		// The error message text
+	public static String passwordInput = "";			// The input being processed
+	public static int passwordIndexofError = -1;		// The index where the error was located
 	public static boolean foundUpperCase = false;
-	/**Check if there exists a lowercase**/
 	public static boolean foundLowerCase = false;
-	/**Check if there exists a numerical digit**/
 	public static boolean foundNumericDigit = false;
-	/**Check if there exists a special character**/
 	public static boolean foundSpecialChar = false;
-	/**Check if the pass is long enough**/
 	public static boolean foundLongEnough = false;
-	/**Check if the pass is too long**/
 	public static boolean foundTooLong = false;
 	private static String inputLine = "";				// The input line
 	private static char currentChar;					// The current character in the line

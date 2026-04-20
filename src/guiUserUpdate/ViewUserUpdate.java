@@ -121,8 +121,7 @@ public class ViewUserUpdate {
 	private static Pane theRootPane;			// The Pane that holds all the GUI widgets
 	private static User theUser;				// The current user of the application
 
-	/**The Scene each invocation populates**/
-	public static Scene theUserUpdateScene = null;	// 
+	public static Scene theUserUpdateScene = null;	// The Scene each invocation populates
 
 	private static Optional<String> result;		// The result from a pop-up dialog
 

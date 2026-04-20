@@ -44,8 +44,8 @@ class DiscussionStatisticFormatterTest {
 	void summaryMatchesCounts() throws SQLException {
 		int p0 = db.countDiscussionPosts();
 		int r0 = db.countDiscussionReplies();
-		int postId = db.createPost(new Post(0, "t", "root", author, "student"));
-		db.createReply(new Reply(0, postId, "reply", author, "student"));
+		int postId = db.createPost(new Post(0, "t", "root", author));
+		db.createReply(new Reply(0, postId, "reply", author));
 		String line = DiscussionStatisticFormatter.buildAdminSummaryLine(db);
 		assertEquals("Discussion posts: " + (p0 + 1) + " | Replies: " + (r0 + 1), line);
 	}

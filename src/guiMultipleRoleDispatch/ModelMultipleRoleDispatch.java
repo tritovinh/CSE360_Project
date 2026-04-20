@@ -14,12 +14,7 @@ package guiMultipleRoleDispatch;
  * @version 1.00		2025-08-15 Initial version
  *  
  */
+
 public class ModelMultipleRoleDispatch {
-	/*****
-     * <p> Method: ModelMultipleRoleDispatch() </p>
-     * 
-     * <p> Description: This default constructor is not used in this system. </p>
-     */
-    public ModelMultipleRoleDispatch() {	
-    }
+
 }

@@ -16,18 +16,18 @@ public class ReplyListCell extends ListCell<Reply> {
 
 	private final HBox box = new HBox(8);
 	private final TextFlow textFlow = new TextFlow();
+	private final Button approveBtn = new Button("Approve");
 	private final Button editBtn = new Button("Edit");
 	private final Button deleteBtn = new Button("Delete");
 
-	
-	/*****
-     * <p> Method: ReplyListCell() </p>
-     * 
-     * <p> Description: Construction method that sets up the cell with body/author display and Edit/Delete buttons. </p>
-     */
+	/** Sets up the cell with body/author display and Edit/Delete buttons */
 	public ReplyListCell() {
 		textFlow.setMaxWidth(Double.MAX_VALUE);
 		HBox.setHgrow(textFlow, Priority.ALWAYS);
+		approveBtn.setOnAction(ev -> {
+			Reply r = getItem();
+			if (r != null) ControllerDiscussion.performApproveReply(r);
+		});
 		editBtn.setOnAction(ev -> {
 			Reply r = getItem();
 			if (r != null) ControllerDiscussion.performEditReply(r);
@@ -36,19 +36,10 @@ public class ReplyListCell extends ListCell<Reply> {
 			Reply r = getItem();
 			if (r != null) ControllerDiscussion.performDeleteReply(r);
 		});
-		box.getChildren().addAll(textFlow, editBtn, deleteBtn);
+		box.getChildren().addAll(textFlow, approveBtn, editBtn, deleteBtn);
 	}
 
-
-    /*****
-     * <p> Method: void updateItem(Reply reply, boolean empty) </p>
-     * 
-     * <p> Description: Renders one reply in the list (body and author) or clears the cell if empty. </p>
-     * 
-     * @param reply specifies the reply item that will be rendered
-     * 
-     * @param empty specifies if the cell is empty or not
-     */
+	/** Renders one reply in the list (body and author) or clears the cell if empty */
 	@Override
 	protected void updateItem(Reply reply, boolean empty) {
 		super.updateItem(reply, empty);
@@ -57,8 +48,13 @@ public class ReplyListCell extends ListCell<Reply> {
 			setText(null);
 			return;
 		}
-		Text t = new Text(reply.getBody() + " — " + reply.getAuthor());
+		String status = reply.isTaApproved() ? " [Approved]" : "";
+		Text t = new Text(reply.getBody() + " — " + reply.getAuthor() + status);
 		textFlow.getChildren().setAll(t);
+		boolean isAdmin = ViewDiscussion.theUser != null && ViewDiscussion.theUser.getAdminRole();
+		approveBtn.setText(reply.isTaApproved() ? "Disapprove" : "Approve");
+		approveBtn.setVisible(isAdmin);
+		approveBtn.setManaged(isAdmin);
 		setGraphic(box);
 		setText(null);
 	}
